@@ -14,3 +14,7 @@ for i in range(1,len(input_lines)):
     connection = "".join(connection.split()).split("-")
     connections.append(connection)
 g.add_not_oriented_connections(connections)
+
+print("Task 1:")
+g.print_nodes_with_size_of_leaving_edges()
+print()
