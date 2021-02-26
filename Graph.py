@@ -10,5 +10,23 @@ class Graph:
             raise ValueError("Adding connection with not  existing node")
         self.connections.append([first_node,second_node])
         self.connections.append([second_node,first_node])
+
+    def add_not_oriented_connections(self,connections):
+        for connection in connections:
+            if len(connection) > 2:
+                raise ValueError("Adding connection with too many arguments")
+            self.add_not_oriented_connection(connection[0],connection[1])
+
     def is_connection(self,from_node, to_node):
         return [from_node,to_node] in self.connections
+
+    def get_leaving_edges_size(self,node):
+        leaving_edges_size = 0
+        for connection in self.connections:
+            if connection[0] == node:
+                leaving_edges_size += 1
+        return leaving_edges_size
+
+    def print(self):
+        print(self.nodes)
+        print(self.connections)

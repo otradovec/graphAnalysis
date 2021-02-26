@@ -1,4 +1,3 @@
-print("Started")
 import sys
 input_lines = []
 for line in sys.stdin:
@@ -6,10 +5,12 @@ for line in sys.stdin:
 
 names = input_lines[0]
 names = "".join(names.split()).split(",")
+from Graph import Graph
+g = Graph(names)
 
 connections = []
 for i in range(1,len(input_lines)):
     connection = input_lines[i]
     connection = "".join(connection.split()).split("-")
     connections.append(connection)
-print(connections)
+g.add_not_oriented_connections(connections)
