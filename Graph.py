@@ -29,6 +29,43 @@ class Graph:
                 leaving_edges_size += 1
         return leaving_edges_size
 
+    def get_neighbors(self,node):
+        neighbors = set()
+        for connection in self.connections:
+            if connection[0] == node:
+                neighbors.add(connection[1])
+        return neighbors
+
+    def get_num_of_unique_neigbors(self,nodes):
+        neigbors = set()
+        for node in nodes:
+            neigbors.update(self.get_neighbors(node))
+        neigbors = neigbors - nodes
+        return len(neigbors)
+
+    def get_three_node_combinations_without_repetition(self):
+        combinations = {frozenset([a, b, c]) for a in self.nodes for b in self.nodes for c in self.nodes}
+        threeNodeCombinations = []
+        for combination in combinations:
+            if len(combination) == 3:
+                threeNodeCombinations.append(combination)
+        return threeNodeCombinations
+
+    def get_three_nodes_with_most_unique_neigbors(self):
+        combinations = self.get_three_node_combinations_without_repetition()
+        mostNeighbors = 0
+        bestCombination = None
+        for combination in combinations:
+            if self.get_num_of_unique_neigbors(set(combination)) > mostNeighbors:
+                bestCombination = combination
+                mostNeighbors = self.get_num_of_unique_neigbors(set(combination))
+        return bestCombination
+
+    def nodes_as_str(self,nodes):
+        retStr = ""
+        retStr += ', '.join(str(node) for node in nodes)
+        return retStr
+
     def print(self):
         print(self.nodes)
         print(self.connections)
