@@ -17,6 +17,21 @@ class GraphTest(unittest.TestCase):
         with self.assertRaises(ValueError):
              self.g.add_not_oriented_connection("A","Z")
 
+    def test_add_oriented_connection(self):
+        self.assertFalse(self.g.is_connection("A","B"))
+        self.g.add_oriented_connection("A","B")
+        self.assertTrue(self.g.is_connection("A","B"))
+        self.assertFalse(self.g.is_connection("D","E"))
+        self.g.add_oriented_connection("D","E")
+        self.assertTrue(self.g.is_connection("D","E"))
+
+    def test_add_oriented_connections(self):
+        self.g.add_oriented_connections([["A","B"],["C","B"],["F","E"]])
+        self.assertFalse(self.g.is_connection("B","C"))
+        self.assertTrue(self.g.is_connection("C","B"))
+        self.assertFalse(self.g.is_connection("C","E"))
+        self.assertTrue(self.g.is_connection("F","E"))
+
     def test_add_not_oriented_connections(self):
         self.g.add_not_oriented_connections([["A","B"],["B","C"],["D","E"]])
         self.assertTrue(self.g.is_connection("B","C"))

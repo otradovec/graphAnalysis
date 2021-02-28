@@ -7,11 +7,18 @@ class Graph:
     def has_node(self,nodeName):
         return nodeName in self.nodes
 
-    def add_not_oriented_connection(self,first_node, second_node):
+    def add_oriented_connection(self,first_node, second_node):
         if not self.has_node(first_node) or not self.has_node(second_node):
-            raise ValueError("Adding connection with not  existing node")
+            raise ValueError("Adding connection with not existing node")
         self.connections.append([first_node,second_node])
-        self.connections.append([second_node,first_node])
+
+    def add_oriented_connections(self,connections):
+        for connection in connections:
+            self.add_oriented_connection(connection[0],connection[1])
+
+    def add_not_oriented_connection(self,first_node, second_node):
+        self.add_oriented_connection(first_node,second_node)
+        self.add_oriented_connection(second_node,first_node)
 
     def add_not_oriented_connections(self,connections):
         for connection in connections:
