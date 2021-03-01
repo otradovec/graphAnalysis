@@ -45,6 +45,24 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(1,self.g.get_leaving_edges_size("C"))
         self.assertEqual(0,self.g.get_leaving_edges_size("F"))
 
+    def test_get_degree(self):
+        self.g.add_not_oriented_connections([["A","B"],["B","C"],["D","E"]])
+        self.assertEqual(1,self.g.get_degree("A"))
+        self.assertEqual(2,self.g.get_degree("B"))
+        self.assertEqual(1,self.g.get_degree("C"))
+        self.assertEqual(1,self.g.get_degree("D"))
+        self.assertEqual(0,self.g.get_degree("F"))
+
+
+    def test_get_node_with_highest_degree(self):
+        self.g.add_oriented_connections([["A","B"],["B","C"],["F","E"]])
+        self.assertEqual("B",self.g.get_node_with_highest_degree())
+        self.g.add_oriented_connections([["B","A"],["D","E"]])
+        self.assertEqual("B",self.g.get_node_with_highest_degree())
+        self.g.add_oriented_connections([["D","A"],["A","E"]])
+        self.assertEqual("A",self.g.get_node_with_highest_degree())
+
+
     def test_get_neighbors(self):
         self.g.add_not_oriented_connections([["A","B"],["B","C"],["D","E"]])
         self.assertEqual({"B"},self.g.get_neighbors("A"))

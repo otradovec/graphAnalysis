@@ -3,3 +3,5 @@ main:
 	cp information.py information
 	chmod 774 fusion.py
 	cp fusion.py fusion
+	chmod 774 distribution.py
+	cp distribution.py distribution 

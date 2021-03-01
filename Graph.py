@@ -36,6 +36,24 @@ class Graph:
                 leaving_edges_size += 1
         return leaving_edges_size
 
+    def __get_incoming_degree(self,node):
+        incoming_degree = 0
+        for connection in self.connections:
+            if connection[1] == node:
+                incoming_degree += 1
+        return incoming_degree
+
+    def get_degree(self,node):
+        return self.get_leaving_edges_size(node) + self.__get_incoming_degree(node)
+
+    def get_node_with_highest_degree(self):
+        node_with_highest_degree = ("",-1)
+        for node in self.nodes:
+            degree = self.get_degree(node)
+            if degree > node_with_highest_degree[1]:
+                node_with_highest_degree = (node,degree)
+        return node_with_highest_degree[0]
+
     def get_neighbors(self,node):
         neighbors = set()
         for connection in self.connections:
