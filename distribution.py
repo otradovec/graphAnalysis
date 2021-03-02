@@ -15,9 +15,13 @@ for i in range(1,len(input_lines)):
     connectionLine = "".join(connection.split()).split(":")[1].split(">")
     for i in range(1,len(connectionLine)):
         connections.append([connectionLine[i-1],connectionLine[i],connectionValue])
+def anoNe(boolean):
+    return "ano" if boolean else "ne"
+
 
 g.add_oriented_connections(connections)
 g.print()
 topNode = g.get_node_with_highest_degree()
 print("nejvice navstevovany: " +  topNode + " " + str(g.get_degree(topNode)))
-#print("existuje vice spojeni mezi dvema mesty: " + )
+print("existuje vice spojeni mezi dvema mesty: " + anoNe(g.is_multigraph()))
+#print("nesmyslna smycka: " + anoNe(g.has_loop()))

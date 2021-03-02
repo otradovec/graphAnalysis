@@ -29,6 +29,20 @@ class Graph:
     def is_connection(self,from_node, to_node):
         return [from_node,to_node] in self.connections
 
+    @staticmethod
+    def __same_start_and_end(connectionA, connectionB):
+        return connectionA[0] == connectionB[0] and connectionA[1] == connectionB[1]
+
+    def is_multigraph(self):
+        if len(self.connections) < 2:
+            return False
+        multi = False
+        for i in range(0,len(self.connections)):
+            for j in range(i+1,len(self.connections)):
+                if self.__same_start_and_end(self.connections[i],self.connections[j]):
+                    multi = True
+        return multi
+
     def get_leaving_edges_size(self,node):
         leaving_edges_size = 0
         for connection in self.connections:
