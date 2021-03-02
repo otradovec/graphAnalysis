@@ -43,6 +43,30 @@ class Graph:
                     multi = True
         return multi
 
+    def has_loop(self):
+        ret = False
+        for connection in self.connections:
+            if connection[0] == connection[1]:
+                ret = True
+        return ret
+
+    def __reachable_nodes(self,node):
+        processed_nodes = set()
+        unprocessed_nodes = set()
+        unprocessed_nodes.add(node)
+        while len(unprocessed_nodes) > 0:
+            working_node = unprocessed_nodes.pop()
+            processed_nodes.add(working_node)
+            unprocessed_nodes.update(self.get_neighbors(working_node) - processed_nodes)
+        return processed_nodes
+
+    def has_connectivity(self):
+        has = True
+        for node in self.nodes:
+            if len(self.__reachable_nodes(node)) < len(self.nodes):
+                has = False
+        return has
+
     def get_leaving_edges_size(self,node):
         leaving_edges_size = 0
         for connection in self.connections:
