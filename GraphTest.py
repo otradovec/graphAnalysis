@@ -89,6 +89,22 @@ class GraphTest(unittest.TestCase):
         self.assertEqual({"A","C"},self.g.get_neighbors("B"))
         self.assertEqual({"D"},self.g.get_neighbors("E"))
 
+    def test_is_complete(self):
+        self.assertFalse(self.g.is_complete())
+        self.g.add_not_oriented_connections([["A","B"],["B","C"],["D","E"]])
+        self.assertFalse(self.g.is_complete())
+        import itertools
+        for conn in itertools.product(["A","B","C","D","E","F"],repeat=2):
+            self.g.add_not_oriented_connection(conn[0],conn[1])
+        self.assertTrue(self.g.is_complete())
+
+    def test_has_bidirectional_edge(self):
+        self.assertFalse(self.g.has_bidirectional_edge())
+        self.g.add_oriented_connections([["A","B"],["B","C"],["D","E"]])
+        self.assertFalse(self.g.has_bidirectional_edge())
+        self.g.add_oriented_connections([["B","A"]])
+        self.assertTrue(self.g.has_bidirectional_edge())
+
 
     def test_get_num_of_unique_neigbors(self):
         self.g.add_not_oriented_connections([["A","B"],["B","C"],["D","E"]])

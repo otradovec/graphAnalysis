@@ -67,6 +67,29 @@ class Graph:
                 has = False
         return has
 
+    def is_complete(self):
+        comp = True
+        import itertools
+        for conn in itertools.product(["A","B","C","D","E","F"],repeat=2):
+            if conn[0] != conn[1]:
+                conn = list(conn)
+                if conn not in self.connections:
+                    comp = False
+        return comp
+
+    def has_bidirectional_edge(self):
+        size = len(self.connections)
+        if size > 1:
+            for i in range(0,size-1):
+                connectionA = self.connections[i]
+                for j in range(i,size):
+                    connectionB = self.connections[j]
+                    if connectionA[0] == connectionB[1] and connectionA[1] == connectionB[0]:
+                        return True
+                        
+        return False
+
+
     def get_leaving_edges_size(self,node):
         leaving_edges_size = 0
         for connection in self.connections:

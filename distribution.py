@@ -20,9 +20,10 @@ def anoNe(boolean):
 
 
 g.add_oriented_connections(connections)
-g.print()
 topNode = g.get_node_with_highest_degree()
 print("nejvice navstevovany: " +  topNode + " " + str(g.get_degree(topNode)))
 print("existuje vice spojeni mezi dvema mesty: " + anoNe(g.is_multigraph()))
 print("nesmyslna smycka: " + anoNe(g.has_loop()))
 print("mesto bez zasobeni: " + anoNe(g.has_connectivity()))
+print("vsechna prima spojeni: "  + anoNe(g.is_complete()))
+print("obousmerne trasy: " + anoNe(g.has_bidirectional_edge()))
