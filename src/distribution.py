@@ -5,7 +5,7 @@ for line in sys.stdin:
 
 names = input_lines[0]
 names = "".join(names.split()).split(",")
-from Graph import Graph
+from src.Graph import Graph
 g = Graph(names)
 
 connections = []
