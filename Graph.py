@@ -84,11 +84,25 @@ class Graph:
                 connectionA = self.connections[i]
                 for j in range(i,size):
                     connectionB = self.connections[j]
-                    if connectionA[0] == connectionB[1] and connectionA[1] == connectionB[0]:
+                    if self.__are_opposite_direction(connectionA,connectionB):
                         return True
-                        
         return False
 
+    def is_bidirectional(self):
+        for conn in self.connections:
+            if not self.__has_edge_in_opposite_direction(conn):
+                return False
+        return True
+
+    def __has_edge_in_opposite_direction(self,conn):
+        for opposite in self.connections:
+            if self.__are_opposite_direction(conn,opposite):
+                return True
+        return False
+
+    @staticmethod
+    def __are_opposite_direction(connectionA,connectionB):
+        return connectionA[0] == connectionB[1] and connectionA[1] == connectionB[0]
 
     def get_leaving_edges_size(self,node):
         leaving_edges_size = 0
@@ -103,6 +117,12 @@ class Graph:
             if connection[1] == node:
                 incoming_degree += 1
         return incoming_degree
+
+    def all_nodes_have_equal_in_out_degree(self):
+        for node in self.nodes:
+            if self.__get_incoming_degree(node) != self.get_leaving_edges_size(node):
+                return False
+        return True
 
     def get_degree(self,node):
         return self.get_leaving_edges_size(node) + self.__get_incoming_degree(node)

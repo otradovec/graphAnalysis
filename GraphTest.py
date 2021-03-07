@@ -105,6 +105,18 @@ class GraphTest(unittest.TestCase):
         self.g.add_oriented_connections([["B","A"]])
         self.assertTrue(self.g.has_bidirectional_edge())
 
+    def test_is_bidirectional(self):
+        self.g.add_oriented_connections([["A","B"],["B","A"],["B","C"],["D","E"]])
+        self.assertFalse(self.g.is_bidirectional())
+        self.g.add_oriented_connections([["C","B"],["E","D"]])
+        self.assertTrue(self.g.is_bidirectional())
+
+    def test_all_nodes_have_equal_in_out_degree(self):
+        self.assertTrue(self.g.all_nodes_have_equal_in_out_degree())
+        self.g.add_oriented_connections([["A","B"],["B","C"],["C","D"]])
+        self.assertFalse(self.g.all_nodes_have_equal_in_out_degree())
+        self.g.add_oriented_connections([["D","A"]])
+        self.assertTrue(self.g.all_nodes_have_equal_in_out_degree())
 
     def test_get_num_of_unique_neigbors(self):
         self.g.add_not_oriented_connections([["A","B"],["B","C"],["D","E"]])
