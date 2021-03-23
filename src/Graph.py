@@ -58,7 +58,8 @@ class Graph:
         if len(self.nodes) < 2:
             return True
         else:
-            return self.__reachable_nodes(self.nodes[0]) == set(self.nodes)
+            some_node = next(iter(self.nodes))
+            return self.__reachable_nodes(some_node) == set(self.nodes)
 
 
     def has_loop(self):
