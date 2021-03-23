@@ -19,7 +19,10 @@ class AcceptanceTest(unittest.TestCase):
         self.cmd_test(bashCmd,expectedResult)
 
     def test_2b(self):
-        pass
+        bashCmd = "cat resources/powerInput.txt | ./reset"
+        expectedResult = "T02 - T04: 2\nT02 - T03: 10\nT01 - T02: 15\nHodnoceni: 27"
+        self.cmd_test(bashCmd,expectedResult)
+
 
 
 if __name__ == '__main__':

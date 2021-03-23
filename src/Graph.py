@@ -61,7 +61,6 @@ class Graph:
             some_node = next(iter(self.nodes))
             return self.__reachable_nodes(some_node) == set(self.nodes)
 
-
     def has_loop(self):
         ret = False
         for connection in self.connections:
@@ -136,6 +135,12 @@ class Graph:
             if connection[1] == node:
                 incoming_degree += 1
         return incoming_degree
+
+    def total_cost(self):
+        sum = 0
+        for conn in self.connections:
+            sum += conn[2]
+        return sum
 
     def all_nodes_have_equal_in_out_degree(self):
         for node in self.nodes:
