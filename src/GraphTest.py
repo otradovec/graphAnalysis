@@ -62,12 +62,40 @@ class GraphTest(unittest.TestCase):
         self.g.add_oriented_connections([["D","A"],["A","E"]])
         self.assertEqual("A",self.g.get_node_with_highest_degree())
 
+    def test_is_oriented(self):
+        self.assertFalse(self.g.is_oriented())
+        self.g.add_not_oriented_connections([["D","B"]])
+        self.assertFalse(self.g.is_oriented())
+        self.g.add_oriented_connections([["A","B"]])
+        self.assertTrue(self.g.is_oriented())
+        self.g.add_oriented_connections([["D","A"],["A","E"]])
+        self.assertTrue(self.g.is_oriented())
+
     def test_is_multigraph(self):
         self.assertFalse(self.g.is_multigraph())
         self.g.add_oriented_connections([["A","B"],["B","C"],["F","E"]])
         self.assertFalse(self.g.is_multigraph())
         self.g.add_oriented_connections([["A","B"]])
         self.assertTrue(self.g.is_multigraph())
+
+    def test_is_tree(self):
+        self.assertFalse(self.g.is_tree())
+        self.g.add_not_oriented_connections([["A","B"],["B","C"],["B","D"]])
+        self.assertFalse(self.g.is_tree())
+        self.g.add_not_oriented_connections([["D","E"],["E","F"]])
+        self.assertTrue(self.g.is_tree())
+        self.g.add_not_oriented_connections([["A","F"]])
+        self.assertFalse(self.g.is_tree())
+
+    def test_is_connected(self):
+        self.assertFalse(self.g.is_connected())
+        self.g.add_not_oriented_connections([["A","B"],["B","C"],["B","D"]])
+        self.assertFalse(self.g.is_connected())
+        self.g.add_not_oriented_connections([["D","E"],["E","F"]])
+        self.assertTrue(self.g.is_connected())
+        self.g.add_not_oriented_connections([["A","F"]])
+        self.assertTrue(self.g.is_connected())
+
 
     def test_has_loop(self):
         self.assertFalse(self.g.has_loop())

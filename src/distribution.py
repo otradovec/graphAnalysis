@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 input_lines = []
 for line in sys.stdin:

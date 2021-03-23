@@ -1,15 +1,15 @@
 main:
 	make clean
-	chmod 774 src/information.py
+	chmod 774 `ls src/*.py`
 	cp src/information.py information
-	chmod 774 src/fusion.py
 	cp src/fusion.py fusion
-	chmod 774 src/distribution.py
 	cp src/distribution.py distribution
+	cp src/power.py power
+	cp src/reset.py reset
+	cp src/weakness.py weakness
+	cp src/avltree.py avltree
 clean:
-	rm -f information
-	rm -f fusion
-	rm -f distribution
+	rm -f information fusion distribution power reset weakness avltree
 	rm -f xotradov.zip
 	rm -rf src/__pycache__
 zip:

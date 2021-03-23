@@ -22,7 +22,7 @@ class Graph:
 
     def add_not_oriented_connections(self,connections):
         for connection in connections:
-            if len(connection) > 2:
+            if len(connection) > 3:
                 raise ValueError("Adding connection with too many arguments")
             self.add_not_oriented_connection(connection[0],connection[1])
 
@@ -42,6 +42,24 @@ class Graph:
                 if self.__same_start_and_end(self.connections[i],self.connections[j]):
                     multi = True
         return multi
+
+    def is_oriented(self):
+        return not self.is_bidirectional()
+
+    def is_tree(self):
+        if self.is_oriented():
+            return False
+        elif len(self.nodes) != ((len(self.connections)/2) + 1):
+            return False
+        else:
+            return self.is_connected()
+
+    def is_connected(self):
+        if len(self.nodes) < 2:
+            return True
+        else:
+            return self.__reachable_nodes(self.nodes[0]) == set(self.nodes)
+
 
     def has_loop(self):
         ret = False
