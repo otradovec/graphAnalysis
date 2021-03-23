@@ -23,7 +23,10 @@ class AcceptanceTest(unittest.TestCase):
         expectedResult = "T02 - T04: 2\nT02 - T03: 10\nT01 - T02: 15\nHodnoceni: 27\n"
         self.cmd_test(bashCmd,expectedResult)
 
-
+    def test_2c(self):
+        bashCmd = "cat resources/weaknessInput.txt | ./weakness"
+        expectedResult = "T02 - T04\nT02 - T05\nT02\n"
+        self.cmd_test(bashCmd,expectedResult)
 
 if __name__ == '__main__':
     unittest.main()

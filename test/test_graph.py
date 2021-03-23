@@ -1,5 +1,6 @@
 import unittest
 from src.Graph import Graph
+from src.Connection import Connection
 
 class GraphTest(unittest.TestCase):
     def setUp(self):
@@ -151,6 +152,14 @@ class GraphTest(unittest.TestCase):
         h = self.g.get_minimal_spanning_tree(printing=False)
         self.assertEqual(5,len(h.connections))
         self.assertEqual(10,h.total_cost())
+
+    def test_bridges(self):
+        self.g.add_not_oriented_connections([["A","B"],["B","C"],["C","D"],["A","C"]])
+        self.assertEqual([Connection("C","D",False)],self.g.bridges())
+
+    def test_separating_set(self):
+        self.g.add_not_oriented_connections([["A","B"],["B","C"],["C","D"],["A","C"],["C","E"]])
+        self.assertEqual({"C","F"},self.g.separating_set())
 
     def test_all_nodes_have_equal_in_out_degree(self):
         self.assertTrue(self.g.all_nodes_have_equal_in_out_degree())

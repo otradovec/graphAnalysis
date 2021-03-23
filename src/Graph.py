@@ -6,7 +6,7 @@ try:
     from .Connection import Connection
 except Exception as e:
     pass
-
+import copy
 
 class Graph:
 
@@ -174,6 +174,40 @@ class Graph:
             sum += int(conn.value)
         return sum
 
+    def bridges(self):
+        br = []
+        for connection in self.connections:
+            if self._is_bridge(connection):
+                br.append(connection)
+        return br
+
+    def _is_bridge(self,connection):
+        g = copy.deepcopy(self)
+        before = len(g._components())
+        g.remove_connection(connection)
+        after = len(g._components())
+        return before != after
+
+    def separating_set(self):
+        sep = set()
+        for node in self.nodes:
+            if self.is_separating(node):
+                sep.add(node)
+        return sep
+
+    def is_separating(self,node):
+        g = copy.deepcopy(self)
+        before = len(g._components())
+        g.remove_node(node)
+        after = len(g._components())
+        return before != after
+
+    def remove_node(self,node):
+        for connection in self.connections:
+            if connection.begg == node or connection.to == node:
+                self.remove_connection(connection)
+        self.nodes.remove(node)
+
     def all_nodes_have_equal_in_out_degree(self):
         for node in self.nodes:
             if self.__get_incoming_degree(node) != self.get_leaving_edges_size(node):
@@ -237,6 +271,7 @@ class Graph:
             if not self._present_in_components(node,comp):
                 c = Graph(self.__reachable_nodes(node))
                 self.copy_connections_to(c)
+
                 comp.add(c)
         return comp
 
