@@ -1,5 +1,5 @@
 import unittest
-from Graph import Graph
+from src.Graph import Graph
 
 class GraphTest(unittest.TestCase):
     def setUp(self):
