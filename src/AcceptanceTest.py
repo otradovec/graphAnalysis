@@ -20,7 +20,7 @@ class AcceptanceTest(unittest.TestCase):
 
     def test_2b(self):
         bashCmd = "cat resources/powerInput.txt | ./reset"
-        expectedResult = "T02 - T04: 2\nT02 - T03: 10\nT01 - T02: 15\nHodnoceni: 27"
+        expectedResult = "T02 - T04: 2\nT02 - T03: 10\nT01 - T02: 15\nHodnoceni: 27\n"
         self.cmd_test(bashCmd,expectedResult)
 
 

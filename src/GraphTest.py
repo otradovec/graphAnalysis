@@ -141,13 +141,13 @@ class GraphTest(unittest.TestCase):
 
     def test_total_cost(self):
         self.assertEqual(0,self.g.total_cost())
-        self.g.add_not_oriented_connections([["A","B",1],["B","C",5],["B","D",4]])
+        self.g.add_not_oriented_valued_connections([["A","B",1],["B","C",5],["B","D",4]])
         self.assertEqual(10,self.g.total_cost())
-        self.g.add_not_oriented_connections([["D","E",3],["E","F",2]])
+        self.g.add_not_oriented_valued_connections([["D","E",3],["E","F",2]])
         self.assertEqual(15,self.g.total_cost())
 
     def test_get_minimal_spanning_tree(self):
-        self.g.add_not_oriented_connections([["A","B",1],["B","C",2],["B","D",1],["D","E",4],["E","F",2],["A","F",10],["A","C",7]])
+        self.g.add_not_oriented_valued_connections([["A","B",1],["B","C",2],["B","D",1],["D","E",4],["E","F",2],["A","F",10],["A","C",7]])
         h = self.g.get_minimal_spanning_tree(printing=False)
         self.assertEqual(5,len(h.connections))
         self.assertEqual(10,h.total_cost())

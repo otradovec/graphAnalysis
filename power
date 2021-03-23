@@ -10,6 +10,6 @@ for line in input_lines:
     connections.append([nodes[0],nodes[1],value])
 from src.Graph import Graph
 g = Graph(set([row[0] for row in connections]).union(set([row[1] for row in connections])))
-g.add_not_oriented_connections(connections)
+g.add_not_oriented_valued_connections(connections)
 message = "OK" if g.is_tree() else "ERROR"
 print("Stav site: " +  message)

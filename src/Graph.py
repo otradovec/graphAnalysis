@@ -1,3 +1,13 @@
+try:
+    from Connection import Connection
+except Exception as ignore:
+    import src.Connection
+try:
+    from .Connection import Connection
+except Exception as e:
+    pass
+
+
 class Graph:
 
     def __init__(self,nodes):
@@ -7,31 +17,50 @@ class Graph:
     def has_node(self,nodeName):
         return nodeName in self.nodes
 
-    def add_oriented_connection(self,first_node, second_node):
-        if not self.has_node(first_node) or not self.has_node(second_node):
+    def add_connection(self,first_node, second_node,oriented,value=1):
+        self._add_connection(Connection(first_node,second_node,oriented,value))
+
+    def _add_connection(self,connection):
+        if not self.has_node(connection.begg) or not self.has_node(connection.to):
             raise ValueError("Adding connection with not existing node")
-        self.connections.append([first_node,second_node])
+        self.connections.append(connection)
+
+    def add_oriented_connection(self,first_node, second_node,value=1):
+        self.add_connection(first_node,second_node,True,value)
 
     def add_oriented_connections(self,connections):
         for connection in connections:
             self.add_oriented_connection(connection[0],connection[1])
 
-    def add_not_oriented_connection(self,first_node, second_node):
-        self.add_oriented_connection(first_node,second_node)
-        self.add_oriented_connection(second_node,first_node)
+    def add_not_oriented_connection(self,first_node, second_node,value=1):
+        self.add_connection(first_node,second_node,False,value)
 
     def add_not_oriented_connections(self,connections):
         for connection in connections:
-            if len(connection) > 3:
+            if len(connection) > 2:
                 raise ValueError("Adding connection with too many arguments")
             self.add_not_oriented_connection(connection[0],connection[1])
 
+    def add_not_oriented_valued_connections(self,connections):
+        for connection in connections:
+            if len(connection) > 3:
+                raise ValueError("Adding connection with too many arguments")
+            self.add_not_oriented_connection(connection[0],connection[1],connection[2])
+
     def is_connection(self,from_node, to_node):
-        return [from_node,to_node] in self.connections
+        for conn in self.connections:
+            if ((conn.begg == from_node) and (conn.to == to_node)):
+                return True
+            elif not conn.oriented and (conn.to == from_node and conn.begg == to_node):
+                return True
+        return False
 
     @staticmethod
     def __same_start_and_end(connectionA, connectionB):
-        return connectionA[0] == connectionB[0] and connectionA[1] == connectionB[1]
+        if isinstance(connectionA,Connection):
+            return connectionA.begg == connectionB.begg and connectionA.to == connectionB.to
+        else:
+            return connectionA[0] == connectionB[0] and connectionA[1] == connectionB[1]
 
     def is_multigraph(self):
         if len(self.connections) < 2:
@@ -49,7 +78,7 @@ class Graph:
     def is_tree(self):
         if self.is_oriented():
             return False
-        elif len(self.nodes) != ((len(self.connections)/2) + 1):
+        elif len(self.nodes) != (len(self.connections) + 1):
             return False
         else:
             return self.is_connected()
@@ -64,7 +93,7 @@ class Graph:
     def has_loop(self):
         ret = False
         for connection in self.connections:
-            if connection[0] == connection[1]:
+            if connection.begg == connection.to:
                 ret = True
         return ret
 
@@ -91,7 +120,7 @@ class Graph:
         for conn in itertools.product(["A","B","C","D","E","F"],repeat=2):
             if conn[0] != conn[1]:
                 conn = list(conn)
-                if conn not in self.connections:
+                if not self.is_connection(conn[0],conn[1]):
                     comp = False
         return comp
 
@@ -108,7 +137,7 @@ class Graph:
 
     def is_bidirectional(self):
         for conn in self.connections:
-            if not self.__has_edge_in_opposite_direction(conn):
+            if (not self.__has_edge_in_opposite_direction(conn)) and conn.oriented:
                 return False
         return True
 
@@ -120,26 +149,29 @@ class Graph:
 
     @staticmethod
     def __are_opposite_direction(connectionA,connectionB):
-        return connectionA[0] == connectionB[1] and connectionA[1] == connectionB[0]
+        if isinstance(connectionA,Connection):
+            return connectionA.begg == connectionB.to and connectionA.to == connectionB.begg
+        else:
+            return connectionA[0] == connectionB[1] and connectionA[1] == connectionB[0]
 
     def get_leaving_edges_size(self,node):
         leaving_edges_size = 0
         for connection in self.connections:
-            if connection[0] == node:
-                leaving_edges_size += 1
+            if (connection.begg == node) or (connection.to == node and not connection.oriented):
+                    leaving_edges_size += 1
         return leaving_edges_size
 
     def __get_incoming_degree(self,node):
         incoming_degree = 0
         for connection in self.connections:
-            if connection[1] == node:
+            if (connection.to == node) or (connection.begg == node and not connection.oriented):
                 incoming_degree += 1
         return incoming_degree
 
     def total_cost(self):
         sum = 0
         for conn in self.connections:
-            sum += conn[2]
+            sum += int(conn.value)
         return sum
 
     def all_nodes_have_equal_in_out_degree(self):
@@ -162,9 +194,60 @@ class Graph:
     def get_neighbors(self,node):
         neighbors = set()
         for connection in self.connections:
-            if connection[0] == node:
-                neighbors.add(connection[1])
+            if connection.begg == node:
+                neighbors.add(connection.to)
+            elif connection.to == node and not connection.oriented:
+                neighbors.add(connection.begg)
         return neighbors
+
+
+    def get_minimal_spanning_tree(self,printing=False):
+        #Kruskals algo
+        if len(self.nodes) <= 1: return self
+        tree = Graph(self.nodes)
+        possible_sorted_edges = list(self.connections)
+        possible_sorted_edges = sorted(possible_sorted_edges, key= lambda x: int(x.value))
+        while len(possible_sorted_edges) > 0:
+            edge = possible_sorted_edges[0]
+            if self.should_be_in_ST(edge,tree):
+                tree._add_connection(edge)
+                if printing:
+                    print(edge.begg+" - "+edge.to+": "+edge.value)
+            possible_sorted_edges.pop(0)
+        return tree
+
+    def should_be_in_ST(self,edge,tree):
+        #Kruskals algo
+        pocKompPred = len(tree._components())
+        tree._add_connection(edge)
+        pocKompPo = len(tree._components())
+        tree.remove_connection(edge)
+        return (pocKompPred - pocKompPo) == 1
+
+    @staticmethod
+    def _present_in_components(node,components):
+        for comp in components:
+            if node in comp.nodes:
+                return True
+        return False
+
+    def _components(self):
+        comp = set()
+        for node in self.nodes:
+            if not self._present_in_components(node,comp):
+                c = Graph(self.__reachable_nodes(node))
+                self.copy_connections_to(c)
+                comp.add(c)
+        return comp
+
+
+    def copy_connections_to(self,component):
+        for connection in self.connections:
+            if connection.begg in component.nodes and connection.to in component.nodes:
+                component._add_connection(connection)
+
+    def remove_connection(self,edge):
+        self.connections.remove(edge)
 
     def get_num_of_unique_neigbors(self,nodes):
         neigbors = set()
