@@ -208,6 +208,11 @@ class Graph:
                 self.remove_connection(connection)
         self.nodes.remove(node)
 
+    #def build_avl_tree(self,ints):
+        #for numb in ints:
+            #self.nodes.add(numb)
+
+
     def all_nodes_have_equal_in_out_degree(self):
         for node in self.nodes:
             if self.__get_incoming_degree(node) != self.get_leaving_edges_size(node):

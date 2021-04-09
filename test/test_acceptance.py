@@ -28,5 +28,10 @@ class AcceptanceTest(unittest.TestCase):
         expectedResult = "T02 - T04\nT02 - T05\nT02\n"
         self.cmd_test(bashCmd,expectedResult)
 
+    def test_2d(self):
+        bashCmd = "cat resources/avltreeInput.txt | ./avltree"
+        expectedResult = "5\n5|_ 15\n9|5 15\n9|5 15|_ 5 _ _\n9|5 15|_ 5 _ 155\n"
+        #self.cmd_test(bashCmd,expectedResult)
+
 if __name__ == '__main__':
     unittest.main()

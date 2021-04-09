@@ -161,6 +161,13 @@ class GraphTest(unittest.TestCase):
         self.g.add_not_oriented_connections([["A","B"],["B","C"],["C","D"],["A","C"],["C","E"]])
         self.assertEqual({"C","F"},self.g.separating_set())
 
+    def test_build_avl_tree(self):
+        self.g = Graph(set())
+        #self.g.build_avl_tree([5,15,10])
+        #self.assertEqual(2,len(self.g.connections))
+        #self.assertTrue(self.g.is_connection(5,10))
+        #self.assertTrue(self.g.is_connection(10,15))
+
     def test_all_nodes_have_equal_in_out_degree(self):
         self.assertTrue(self.g.all_nodes_have_equal_in_out_degree())
         self.g.add_oriented_connections([["A","B"],["B","C"],["C","D"]])
