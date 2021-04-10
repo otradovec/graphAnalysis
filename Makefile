@@ -8,10 +8,13 @@ main:
 	cp src/reset.py reset
 	cp src/weakness.py weakness
 	cp src/avltree.py avltree
+	cp src/forest.py forest
+	cp src/race.py race
+	cp src/message.py message
 clean:
-	rm -f information fusion distribution power reset weakness avltree
+	rm -f information fusion distribution power reset weakness avltree forest race message
 	rm -f xotradov.zip
 	rm -rf src/__pycache__
 zip:
 	unoconv -f pdf report.odt
-	zip xotradov.zip Makefile src/* report.pdf fusion distribution power reset weakness avltree
+	zip xotradov.zip Makefile src/* report.pdf fusion distribution power reset weakness avltree forest race message
