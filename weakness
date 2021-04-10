@@ -14,7 +14,7 @@ g.add_not_oriented_valued_connections(connections)
 
 bridges = g.bridges()
 for bridge in bridges:
-    print(bridge.begg + " - " + bridge.to)
+    print(str(bridge.begg) + " - " + str(bridge.to))
 separating_set = g.separating_set()
 for node in separating_set:
     print(node)
