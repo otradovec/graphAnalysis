@@ -30,3 +30,6 @@ class Connection:
             return NotImplemented
         return (self.begg == other.begg) and (self.to == other.to) and (self.oriented == other.oriented) and (
                     self.value == other.value)
+
+    def __hash__(self):
+        return hash(str(self.begg) + str(self.to) + str(self.oriented))

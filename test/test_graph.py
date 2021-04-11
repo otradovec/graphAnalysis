@@ -240,6 +240,19 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(2, self.g.get_num_of_unique_neigbors({Node("A"), Node("D")}))
         self.assertEqual(2, self.g.get_num_of_unique_neigbors({Node("A"), Node("B"), Node("D")}))
 
+    def test_get_node_with_lowest_value(self):
+        a = Node("A", "B", 3)
+        nodes = {a}
+        self.assertEqual(a,self.g.get_node_with_lowest_value(nodes))
+        b = Node("B", "C", 2)
+        nodes.add(b)
+        self.assertEqual(b, self.g.get_node_with_lowest_value(nodes))
+        c = Node("C", None, 0)
+        d = Node("D", None, None)
+        nodes.add(c)
+        nodes.add(d)
+        self.assertEqual(c,self.g.get_node_with_lowest_value(nodes))
+
     def test_get_three_node_combinations_without_repetition(self):
         self.assertEqual(20, len(self.g.get_three_node_combinations_without_repetition()))
 

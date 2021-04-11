@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-
 input_lines = [line for line in sys.stdin]
 
 connections = []
@@ -13,8 +12,7 @@ from src.Graph import Graph
 
 g = Graph(set([row[0] for row in connections]).union(set([row[1] for row in connections])))
 g.add_not_oriented_valued_connections(connections)
-nodes = g.get_dijkstra_valuated_nodes_from("Vy")
-
+nodes = list(g.get_dijkstra_valuated_nodes_from("Vy"))
 
 def sorting_func(node):
     return node.distance
@@ -22,4 +20,4 @@ def sorting_func(node):
 
 nodes.sort(key=sorting_func)
 for node in nodes:
-    print(node.name + ": " + str(node.distance))
+    print(node.name + ": " + str(int(node.distance)))

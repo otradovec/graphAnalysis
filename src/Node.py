@@ -19,4 +19,4 @@ class Node:
         return self.name == other.name
 
     def __hash__(self):
-        return hash(self.__repr__())
+        return hash(self.name)

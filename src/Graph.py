@@ -15,12 +15,12 @@ import copy
 class Graph:
 
     def __init__(self, nodes):
-        self.nodes = set()
+        self.nodes = []
         for node in nodes:
             if type(node) == Node:
-                self.nodes.add(node)
+                self.nodes.append(node)
             else:
-                self.nodes.add(Node(node))
+                self.nodes.append(Node(node))
         self.connections = []
 
     def __str__(self):
@@ -186,11 +186,14 @@ class Graph:
             return connectionA[0] == connectionB[1] and connectionA[1] == connectionB[0]
 
     def get_leaving_edges_size(self, node):
-        leaving_edges_size = 0
+        return len(self.get_leaving_edges(node))
+
+    def get_leaving_edges(self, node):
+        leaving_edges = set()
         for connection in self.connections:
             if (connection.begg == node) or (connection.to == node and not connection.oriented):
-                leaving_edges_size += 1
-        return leaving_edges_size
+                leaving_edges.add(connection)
+        return leaving_edges
 
     def get_incoming_degree(self, node):
         if type(node) == str:
@@ -325,6 +328,46 @@ class Graph:
         neigbors = neigbors - nodes
         return len(neigbors)
 
+    def dijkstra_process_node(self, processed_node, nodes_to_process, processed_nodes):
+        for connection in self.get_leaving_edges(processed_node):
+            if connection.begg == processed_node:
+                other_node = connection.to
+            else:
+                other_node = connection.begg
+            other_node = self.get_node(other_node.name)
+            if other_node not in processed_nodes:
+                if other_node not in nodes_to_process:
+                    nodes_to_process.append(other_node)
+                if other_node.distance is None or float(other_node.distance) > (float(processed_node.distance) + float(connection.value)):
+                    other_node.distance = processed_node.distance + float(connection.value)
+                    other_node.predecessor = processed_node
+
+    @staticmethod
+    def get_node_with_lowest_value(nodes):
+        nodelist = list(nodes)
+
+        def lowest_first_None_least(node):
+            if node.distance is not None:
+                return node.distance
+            else:
+                return 100000000
+
+        nodelist.sort(key=lowest_first_None_least)
+        return nodelist[0]
+
+    def get_dijkstra_valuated_nodes_from(self, node_name: str):
+        starting_node = self.get_node(node_name)
+        starting_node.predecessor = None
+        starting_node.distance = 0
+        nodes_to_process = [starting_node]
+        processed_nodes = []
+        while len(nodes_to_process) > 0:
+            processed_node = self.get_node_with_lowest_value(nodes_to_process)
+            nodes_to_process.remove(processed_node)
+            self.dijkstra_process_node(processed_node, nodes_to_process, processed_nodes)
+            processed_nodes.append(processed_node)
+        return processed_nodes
+
     def get_three_node_combinations_without_repetition(self):
         combinations = {frozenset([a, b, c]) for a in self.nodes for b in self.nodes for c in self.nodes}
         threeNodeCombinations = []
@@ -349,7 +392,7 @@ class Graph:
         return retStr
 
     def print(self):
-        #print(str(self))
+        # print(str(self))
         print(self.nodes)
         print(self.connections)
 
@@ -358,4 +401,3 @@ class Graph:
         nodes.sort(reverse=True, key=self.get_leaving_edges_size)
         for node in nodes:
             print(str(node) + " (" + str(self.get_leaving_edges_size(node)) + ")")
-

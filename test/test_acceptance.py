@@ -36,7 +36,8 @@ class AcceptanceTest(unittest.TestCase):
 
     def test_3a(self):
         bashCmd = "cat resources/messageInput.txt | ./message"
-        expectedResult = "Vy: 0\nPepa: 2\nAnna: 3\nHonza: 3\nMichal: 4\nOndra: 5\nTomas: 6\nJirka: 6"
+        expectedResult = "Vy: 0\nPepa: 2\nHonza: 3\nAnna: 3\nMichal: 4\nOndra: 5\nTomas: 6\nJirka: 6\n"
+        self.maxDiff =None
         self.cmd_test(bashCmd, expectedResult)
 
 
