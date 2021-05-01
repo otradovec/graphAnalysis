@@ -238,15 +238,13 @@ class Graph:
         after = len(g.components())
         return before != after
 
-    def remove_node(self, node):
-        for connection in self.connections:
-            if connection.begg == node or connection.to == node:
-                self.remove_connection(connection)
-        self.nodes.remove(node)
+    @staticmethod
+    def contains(connection: Connection, node: Node):
+        return connection.begg == node or connection.to == node
 
-    # def build_avl_tree(self,ints):
-    # for numb in ints:
-    # self.nodes.add(numb)
+    def remove_node(self, node):
+        self.connections = [x for x in self.connections if not self.contains(x, node)]
+        self.nodes.remove(node)
 
     def all_nodes_have_equal_in_out_degree(self):
         for node in self.nodes:
@@ -338,7 +336,8 @@ class Graph:
             if other_node not in processed_nodes:
                 if other_node not in nodes_to_process:
                     nodes_to_process.append(other_node)
-                if other_node.distance is None or float(other_node.distance) > (float(processed_node.distance) + float(connection.value)):
+                if other_node.distance is None or float(other_node.distance) > (
+                        float(processed_node.distance) + float(connection.value)):
                     other_node.distance = processed_node.distance + float(connection.value)
                     other_node.predecessor = processed_node
 
@@ -367,6 +366,107 @@ class Graph:
             self.dijkstra_process_node(processed_node, nodes_to_process, processed_nodes)
             processed_nodes.append(processed_node)
         return processed_nodes
+
+    def add_connection_to_every_node(self, begg, value, oriented: bool):
+        for other in self.nodes:
+            if other != begg:
+                self.add_connection(begg, other, oriented, value)
+
+    def get_nodes_with_leaving_degree(self, degree):
+        return [node for node in self.nodes if self.get_leaving_edges_size(node) == degree]
+
+    def decreases_num_of_components_adding(self, connection: Connection):
+        g = copy.deepcopy(self)
+        before = len(g.components())
+        g._add_connection(connection)
+        after = len(g.components())
+        return before > after
+
+    @staticmethod
+    def can_be_in_ham_cycle(conn, cycle):
+        if len(cycle.get_nodes_with_leaving_degree(2)) + 2 == len(cycle.nodes):
+            return cycle.get_leaving_edges_size(conn.begg) < 2 and cycle.get_leaving_edges_size(conn.to) < 2
+        else:
+            return cycle.decreases_num_of_components_adding(conn) and\
+                   cycle.get_leaving_edges_size(conn.begg) < 2 and cycle.get_leaving_edges_size(conn.to) < 2
+
+    def get_hamilton_cycle(self):
+        #Hungry algo
+        cycle = Graph(self.nodes)
+        connections = self.connections
+
+        def shortest_first(connection):
+            return connection.value
+
+        connections.sort(key = shortest_first)
+        for conn in connections:
+            if self.can_be_in_ham_cycle(conn, cycle):
+                cycle._add_connection(conn)
+        return cycle
+
+    @staticmethod
+    def get_path_start(path):
+        for node in path.nodes:
+            if path.get_leaving_edges_size(node) == 1:
+                return node
+
+    @staticmethod
+    def second_side(conn, node):
+        if conn.begg == node:
+            return conn.to
+        else:
+            return conn.begg
+
+    def get_path_from(self, start):
+        path = Graph([start])
+        previous = start
+        for i in range(len(self.nodes)-1):
+            edges = self.get_leaving_edges(previous)
+            for edge in edges:
+                if edge not in path.connections:
+                    other = self.second_side(edge, previous)
+                    path.nodes.append(other)
+                    path._add_connection(edge)
+                    previous = other
+        path_list = [start]
+        for i in range(len(path.nodes)-1):
+            path_list.append(path.connections[i])
+            path_list.append(path.nodes[i+1])
+        return path_list
+
+    def get_path(self):
+        start = self.get_path_start(self)
+        return self.get_path_from(start)
+
+    def get_hamilton_path(self):
+        assert self.is_complete()
+        zero_node = Node("ZeroToBeDeleted")
+        self.nodes.append(zero_node)
+        self.add_connection_to_every_node(zero_node, 0, False)
+        cycle = self.get_hamilton_cycle()
+        cycle.remove_node(zero_node)
+        #self.nodes.remove(zero_node)
+        self.remove_node(zero_node)
+        return cycle.get_path()
+
+    def get_hamilton_path_nodes(self):
+        path = self.get_hamilton_path()
+        path_nodes = []
+        for element in path:
+            if type(element) == Node:
+                path_nodes.append(element)
+        return path_nodes
+
+    def get_hamilton_path_distance(self):
+        path = self.get_hamilton_path()
+        path_connections = []
+        for element in path:
+            if type(element) == Connection:
+                path_connections.append(element)
+        distance = 0
+        for conn in path_connections:
+            distance = distance + float(conn.value)
+        return distance
 
     def get_three_node_combinations_without_repetition(self):
         combinations = {frozenset([a, b, c]) for a in self.nodes for b in self.nodes for c in self.nodes}
@@ -401,3 +501,5 @@ class Graph:
         nodes.sort(reverse=True, key=self.get_leaving_edges_size)
         for node in nodes:
             print(str(node) + " (" + str(self.get_leaving_edges_size(node)) + ")")
+
+

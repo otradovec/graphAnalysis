@@ -6,9 +6,12 @@ class AcceptanceTest(unittest.TestCase):
     def cmd_test(self, bashCmd, expectedResult):
         process = subprocess.Popen(bashCmd, shell=True, stdout=subprocess.PIPE)
         output, error = process.communicate()
+        output = output.decode("utf-8")
         self.assertIsNone(error)
-        self.assertEqual(output.decode("utf-8"), expectedResult)
-
+        if type(expectedResult) == str:
+            self.assertEqual(output, expectedResult)
+        else:
+            self.assertIn(output, expectedResult)
     def test_2a(self):
         bashCmd = "cat resources/powerInput.txt | ./power"
         expectedResult = "Stav site: ERROR\n"
@@ -37,7 +40,16 @@ class AcceptanceTest(unittest.TestCase):
     def test_3a(self):
         bashCmd = "cat resources/messageInput.txt | ./message"
         expectedResult = "Vy: 0\nPepa: 2\nHonza: 3\nAnna: 3\nMichal: 4\nOndra: 5\nTomas: 6\nJirka: 6\n"
-        self.maxDiff =None
+        self.cmd_test(bashCmd, expectedResult)
+
+    def test_3b(self):
+        bashCmd = "cat resources/forestInput.txt | ./forest"
+        expectedResult = ["A -> B -> C -> D: 4\n",
+                          "A -> B -> D -> C: 4\n",
+                          "C -> D -> B -> A: 4\n",
+                          "D -> C -> B -> A: 4\n",
+                          "A -> D -> C -> B: 6\n",
+                          "D -> A -> B -> C: 6\n"]
         self.cmd_test(bashCmd, expectedResult)
 
 

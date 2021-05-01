@@ -53,6 +53,12 @@ class GraphTest(unittest.TestCase):
         self.assertTrue(self.g.is_connection("C", "B"))
         self.assertFalse(self.g.is_connection("C", "E"))
 
+    def test_remove_node(self):
+        self.g.add_not_oriented_connections([[Node("A"), Node("B")], [Node("B"), Node("C")], [Node("D"), Node("E")]])
+        self.g.remove_node(Node("B"))
+        self.assertEqual(5, len(self.g.nodes))
+        self.assertEqual(1, len(self.g.connections))
+
     def test_get_leaving_edges_size(self):
         self.g.add_not_oriented_connections([["A", "B"], ["B", "C"], ["D", "E"]])
         self.assertEqual(1, self.g.get_leaving_edges_size(Node("A")))
@@ -189,7 +195,7 @@ class GraphTest(unittest.TestCase):
         self.assertFalse(self.g.present_in_components(t.get_node("F"), {f, s}))
         self.assertFalse(self.g.present_in_components(f.get_node("B"), {s, t}))
         self.assertFalse(self.g.present_in_components(f.get_node("B"), {t}))
-        self.assertTrue(f.present_in_components(f.get_node("A"),{f}))
+        self.assertTrue(f.present_in_components(f.get_node("A"), {f}))
 
     def test_components(self):
         self.assertEqual(len(self.g.nodes), len(self.g.components()))
@@ -243,7 +249,7 @@ class GraphTest(unittest.TestCase):
     def test_get_node_with_lowest_value(self):
         a = Node("A", "B", 3)
         nodes = {a}
-        self.assertEqual(a,self.g.get_node_with_lowest_value(nodes))
+        self.assertEqual(a, self.g.get_node_with_lowest_value(nodes))
         b = Node("B", "C", 2)
         nodes.add(b)
         self.assertEqual(b, self.g.get_node_with_lowest_value(nodes))
@@ -251,15 +257,57 @@ class GraphTest(unittest.TestCase):
         d = Node("D", None, None)
         nodes.add(c)
         nodes.add(d)
-        self.assertEqual(c,self.g.get_node_with_lowest_value(nodes))
+        self.assertEqual(c, self.g.get_node_with_lowest_value(nodes))
+
+    def test_get_path_from(self):
+        self.g = Graph(["A", "B", "C", "D"])
+        self.g.add_not_oriented_connections([["A", "B"], ["B", "C"], ["D", "C"]])
+        self.assertEqual(7, len(self.g.get_path_from(Node("A"))))
+
+    def test_add_connection_to_every_node(self):
+        self.g.add_connection_to_every_node(self.g.nodes[0], 0, False)
+        self.assertEqual(len(self.g.nodes) - 1, len(self.g.connections))
+
+    def test_get_hamilton_path(self):
+        self.g = Graph(["A", "B", "C", "D"])
+        connections = [["A", "B", 10], ["A", "C", 3], ["A", "D", 2], ["B", "C", 1], ["B", "D", 5], ["C", "D", 7]]
+        self.g.add_not_oriented_valued_connections(connections)
+        self.assertEqual(7, len(self.g.get_hamilton_path()))
+
+    def test_get_hamilton_path_nodes(self):
+        self.g = Graph(["A", "B", "C", "D"])
+        connections = [["A", "B", 10], ["A", "C", 3], ["A", "D", 2], ["B", "C", 1], ["B", "D", 5], ["C", "D", 7]]
+        self.g.add_not_oriented_valued_connections(connections)
+        self.assertEqual(4, len(self.g.get_hamilton_path_nodes()))
+        self.assertIn(self.g.get_hamilton_path_nodes(), [[Node("B"), Node("C"), Node("A"), Node("D")],
+                                                         [Node("A"), Node("D"), Node("C"), Node("B")]])
+    def test_get_hamilton_path_nodes2(self):
+        self.g = Graph(["A", "B", "C", "D"])
+        connections = [["A", "B", 1], ["B", "C", 2], ["C", "D", 1], ["D", "A", 3], ["A", "C", 3], ["B", "D", 2]]
+        self.g.add_not_oriented_valued_connections(connections)
+        self.assertEqual(4, len(self.g.get_hamilton_path_nodes()))
+        self.assertIn(self.g.get_hamilton_path_nodes(), [[Node("A"), Node("B"), Node("C"), Node("D")],
+                                                         [Node("A"), Node("B"), Node("D"), Node("C")],
+                                                         [Node("C"), Node("D"), Node("B"), Node("A")],
+                                                         [Node("D"), Node("C"), Node("B"), Node("A")],
+                                                         [Node("A"), Node("D"), Node("C"), Node("B")],
+                                                         [Node("B"), Node("C"), Node("D"), Node("A")]])
+
+    def test_get_hamilton_path_distance(self):
+        self.g = Graph(["A", "B", "C", "D"])
+        connections = [["A", "B", 10], ["A", "C", 3], ["A", "D", 2], ["B", "C", 1], ["B", "D", 5], ["C", "D", 7]]
+        self.g.add_not_oriented_valued_connections(connections)
+        self.assertTrue(14 > self.g.get_hamilton_path_distance())
 
     def test_get_three_node_combinations_without_repetition(self):
         self.assertEqual(20, len(self.g.get_three_node_combinations_without_repetition()))
 
     def test_get_three_nodes_with_most_unique_neigbors(self):
         self.g.add_not_oriented_connections([["A", "B"], ["B", "C"], ["D", "E"]])
-        self.assertTrue({Node("B"), Node("D"), Node("F")} == self.g.get_three_nodes_with_most_unique_neigbors() or {Node("B"), Node("E"),
-                                                                                                  Node("F")} == self.g.get_three_nodes_with_most_unique_neigbors())
+        self.assertTrue(
+            {Node("B"), Node("D"), Node("F")} == self.g.get_three_nodes_with_most_unique_neigbors()
+            or {Node("B"), Node("E"), Node("F")} == self.g.get_three_nodes_with_most_unique_neigbors()
+        )
 
     def test_nodes_as_str(self):
         self.assertEqual("A, B, C", self.g.nodes_as_str(['A', "B", "C"]))
