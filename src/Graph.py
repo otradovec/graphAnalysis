@@ -417,6 +417,10 @@ class Graph:
         else:
             return conn.begg
 
+    def invert_connection_values(self):
+        for conn in self.connections:
+            conn.value = - float(conn.value)
+
     def get_path_from(self, start):
         path = Graph([start])
         previous = start
@@ -437,6 +441,19 @@ class Graph:
     def get_path(self):
         start = self.get_path_start(self)
         return self.get_path_from(start)
+
+    def get_shortest_path_nodes(self, start_node, end_node):
+        all_nodes = self.get_dijkstra_valuated_nodes_from(start_node.name)
+        result = []
+        for node in all_nodes:
+            if node == end_node:
+                result.append(node)
+        while result[-1] != start_node:
+            for node in all_nodes:
+                if node == result[-1].predecessor:
+                    result.append(node)
+        result.reverse()
+        return result
 
     def get_hamilton_path(self):
         assert self.is_complete()
@@ -501,5 +518,6 @@ class Graph:
         nodes.sort(reverse=True, key=self.get_leaving_edges_size)
         for node in nodes:
             print(str(node) + " (" + str(self.get_leaving_edges_size(node)) + ")")
+
 
 

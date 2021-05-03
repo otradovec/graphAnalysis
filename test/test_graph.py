@@ -268,6 +268,28 @@ class GraphTest(unittest.TestCase):
         self.g.add_connection_to_every_node(self.g.nodes[0], 0, False)
         self.assertEqual(len(self.g.nodes) - 1, len(self.g.connections))
 
+    def test_invert_connection_values(self):
+        self.g.add_not_oriented_valued_connections([["A", "B", 2],
+                                             ["B", "C", -2],
+                                             ["C", "D", 0]])
+        self.g.invert_connection_values()
+        self.assertEqual(-2, self.g.connections[0].value)
+        self.assertEqual(2, self.g.connections[1].value)
+        self.assertEqual(0, self.g.connections[2].value)
+
+    def test_get_shortest_path_nodes(self):
+        self.g.add_not_oriented_valued_connections([["A", "B", 1],
+                                                ["B", "C", 3],
+                                                ["C", "D", -2],
+                                                ["D", "E", 1],
+                                                ["E", "F", 1],
+                                                ["A", "F", 10],
+                                                ["D", "B", -2],
+                                                ["B", "E", 4]])
+        nodes = self.g.get_shortest_path_nodes(Node("A"), Node("F"))
+        self.assertEqual([Node("A"), Node("B"), Node("D"), Node("E"), Node("F")],
+                         nodes)
+
     def test_get_hamilton_path(self):
         self.g = Graph(["A", "B", "C", "D"])
         connections = [["A", "B", 10], ["A", "C", 3], ["A", "D", 2], ["B", "C", 1], ["B", "D", 5], ["C", "D", 7]]
